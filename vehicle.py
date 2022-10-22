@@ -2,7 +2,7 @@ from math import sin, cos
 import numpy as np
     
 class Vehicle:
-    def __init__(self, x=np.array([0,0,0,0]), u=np.array([0,0]), T=0.01, measurement_stds=[0.1,0.1,0.01,0.02]):
+    def __init__(self, x=np.array([0,0,0,0]), u=np.array([0,0]), T=0.01, measurement_stds=np.array([0.1,0.1,0.01,0.02])):
         # x: x, y, theta, v
         # u: a, omega
         self.T = T
@@ -39,11 +39,18 @@ class Vehicle:
     def full_observation(self, x, u, enable_noise=True):
         Cd = np.array([
             [1, 0, 0, 0],
-            [0, 1, 0, 0]
+            [0, 1, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
         ])
-        Dd = np.eye(2)
+        Dd = np.array([
+            [0, 0],
+            [0, 0],
+            [1, 0],
+            [0, 1]
+        ])
         G = Cd
-        return Cd @ x + Dd @ u + enable_noise*np.random.normal(0, self.measurement_stds[:2]).T, G
+        return Cd @ x + Dd @ u + enable_noise*np.random.normal(0, self.measurement_stds).T, G
 
     def rate_and_accel_observation(self, x, u, enable_noise=True):
         Cd = np.zeros((2,4))
