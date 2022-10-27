@@ -26,7 +26,9 @@ class Vehicle:
         Ad = np.eye(self.x.size) # A = 0
         Bd = B*self.T
 
-        return Ad @ x + Bd @ (u + enable_noise*np.random.normal(0, self.measurement_stds[-2:]))
+        x_new = Ad @ x + Bd @ (u + enable_noise*np.random.normal(0, self.measurement_stds[-2:]))
+        x_new[2] = x_new[2]%(2*np.pi) # Limit to 0~2pi
+        return x_new
 
     def F(self, x):
         return np.array([
