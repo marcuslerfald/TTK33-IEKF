@@ -2,7 +2,7 @@ from math import sin, cos
 import numpy as np
     
 class Vehicle:
-    def __init__(self, x=np.array([0,0,0,0]), u=np.array([0,0]), T=0.01, measurement_stds=np.array([0.1,0.1,0.01,0.02])):
+    def __init__(self, x=np.array([0,0,0,0]), u=np.array([0,0]), T=0.01, measurement_stds=np.array([0.1,0.1,0.0001,0.0002])):
         # x: x, y, theta, v
         # u: a, omega
         self.T = T
