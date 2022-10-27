@@ -13,7 +13,7 @@ class Vehicle:
         self.x_data = np.empty((0,4), float)
         self.u_data = np.empty((0,2), float)
 
-    def f(self, x, u):
+    def f(self, x, u, enable_noise=True):
         #Zero-order hold discretization. x_dot ≈ 1/dt(x_k+1 - x_k)
         #Ad = I + A*dt, Bd = B*dt
         B = np.array([
@@ -26,7 +26,7 @@ class Vehicle:
         Ad = np.eye(self.x.size) # A = 0
         Bd = B*self.T
 
-        return Ad @ x + Bd @ u
+        return Ad @ x + Bd @ (u + enable_noise*np.random.normal(0, self.measurement_stds[-2:]))
 
     def F(self, x):
         return np.array([
@@ -36,24 +36,15 @@ class Vehicle:
             [0, 0, 0, 1]
         ])
 
-    def full_observation(self, x, u, enable_noise=True):
+    def g(self, x, enable_noise=True):
         Cd = np.array([
             [1, 0, 0, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 0],
-            [0, 0, 0, 0]
+            [0, 1, 0, 0]
         ])
-        Dd = np.array([
-            [0, 0],
-            [0, 0],
-            [1, 0],
-            [0, 1]
-        ])
-        G = Cd
-        return Cd @ x + Dd @ u + enable_noise*np.random.normal(0, self.measurement_stds).T, G
+        return Cd @ x + enable_noise*np.random.normal(0, self.measurement_stds[:2]).T
 
-    def rate_and_accel_observation(self, x, u, enable_noise=True):
-        Cd = np.zeros((2,4))
-        Dd = np.eye(2)
-        G = Cd
-        return Cd @ x + Dd @ u + enable_noise*np.random.normal(0, self.measurement_stds[2:]).T, G
+    def G(self):
+        return np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0]
+        ])
